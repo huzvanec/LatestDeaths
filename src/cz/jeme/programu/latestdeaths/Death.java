@@ -1,4 +1,4 @@
-package cz.jeme.programu.latestdeath;
+package cz.jeme.programu.latestdeaths;
 
 import java.util.Date;
 
