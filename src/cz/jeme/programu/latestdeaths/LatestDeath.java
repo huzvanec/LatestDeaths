@@ -148,12 +148,14 @@ public class LatestDeath extends JavaPlugin implements Listener {
 	}
 
 	private String translateKiller(String killer) {
+// This doesn't work, because it lowers also playernames, so i had to turn it off
 //		String lowerKiller = killer.replace('_', ' ').toLowerCase();
 //		return lowerKiller.substring(0, 1).toUpperCase() + lowerKiller.substring(1);
 		return killer;
 	}
 
 	private String translateShooter(String shooter) {
+// This doesn't work, because it lowers also playernames, so i had to turn it off
 //		String lowerShooter = shooter.replace('_', ' ').toLowerCase();
 //		return lowerShooter.substring(0, 1).toUpperCase() + lowerShooter.substring(1);
 		return shooter;
@@ -220,24 +222,5 @@ public class LatestDeath extends JavaPlugin implements Listener {
 			getLogger().severe("Unable to write to database!");
 			getLogger().severe(e.getMessage());
 		}
-
-//		Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(),
-//				"tellraw @a {\"text\":\"Dimension: " + dimension + "\",\"color\":\"#FA0002\"}");
-//		Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(),
-//				"tellraw @a {\"text\":\"X position: " + xPos + "\",\"color\":\"#FA0002\"}");
-//		Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(),
-//				"tellraw @a {\"text\":\"Y position: " + yPos + "\",\"color\":\"#FA0002\"}");
-//		Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(),
-//				"tellraw @a {\"text\":\"Z position: " + zPos + "\",\"color\":\"#FA0002\"}");
-//		Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "tellraw @a \"\"");
-//		Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(),
-//				"tellraw @a {\"text\":\"Player: " + player.getName() + "\",\"color\":\"#FA0002\"}");
-//		Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(),
-//				"tellraw @a {\"text\":\"Death cause: " + cause + "\",\"color\":\"#FA0002\"}");
-//		Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(),
-//				"tellraw @a {\"text\":\"Killer: " + killerStr + "\",\"color\":\"#FA0002\"}");
-//		Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(),
-//				"tellraw @a {\"text\":\"Thrower: " + shooter + "\",\"color\":\"#FA0002\"}");
-
 	}
 }

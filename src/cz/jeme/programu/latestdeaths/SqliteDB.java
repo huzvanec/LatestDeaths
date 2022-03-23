@@ -120,9 +120,4 @@ public class SqliteDB {
 		conn = DriverManager.getConnection(jdbcUrl + dataFolderPath);
 		return conn;
 	}
-
-//	public static void main(String[] args) throws ClassNotFoundException, SQLException {
-//		SqliteDB myDB = new SqliteDB(new File(""));
-//	}
-
 } 
