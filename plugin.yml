@@ -1,0 +1,16 @@
+
+main: cz.jeme.programu.latestdeath.LatestDeath
+name: LatestDeaths
+version: 3.0
+api-version: 1.16
+author: XD_CZ
+description: Shows player's last death(s)
+website: programu.jeme.cz
+prefix: LatestDeaths
+commands:
+    lastdeaths:
+      description: shows latest deaths
+      usage: "Usage: /latestdeaths <how many>"
+      aliases: ld
+      permission: latestdeaths.latestdeaths
+      permission-message: "No permission! Ask the admin to grant it."
