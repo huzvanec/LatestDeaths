@@ -21,14 +21,13 @@ public class SqliteDB {
 	private String dataFolderPath = null;
 	private SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	private Connection conn = null;
-	
-	
+
 	public SqliteDB(File dataFolder) throws SQLException, ClassNotFoundException {
 		if (dataFolder == null) {
 			throw new IllegalArgumentException("Param dataFolder can't be null!");
 		}
 		Class.forName("org.sqlite.JDBC");
-		
+
 		dataFolderPath = dataFolder.getAbsolutePath().replace("\\", "/") + "/" + databaseName;
 		openConnection();
 		if (conn != null) {
@@ -42,19 +41,10 @@ public class SqliteDB {
 
 	private void createDeathTable() throws SQLException {
 		PreparedStatement myStatement = null;
-		String sql = "CREATE TABLE IF NOT EXISTS Deaths "
-				+ "("
-				+ "id INTEGER PRIMARY KEY, "
-				+ "name TEXT NOT NULL, "
-				+ "dimension TEXT NOT NULL, "
-				+ "xPos INTEGER NOT NULL, "
-				+ "yPos INTEGER NOT NULL, "
-				+ "zPos INTEGER NOT NULL, "
-				+ "deathCause TEXT NOT NULL, "
-				+ "killerEntity TEXT, "
-				+ "shooterEntity TEXT, "
-				+ "date TEXT NOT NULL"
-				+ ");";
+		String sql = "CREATE TABLE IF NOT EXISTS Deaths " + "(" + "id INTEGER PRIMARY KEY, " + "name TEXT NOT NULL, "
+				+ "dimension TEXT NOT NULL, " + "xPos INTEGER NOT NULL, " + "yPos INTEGER NOT NULL, "
+				+ "zPos INTEGER NOT NULL, " + "deathCause TEXT NOT NULL, " + "killerEntity TEXT, "
+				+ "shooterEntity TEXT, " + "date TEXT NOT NULL" + ");";
 		myStatement = conn.prepareStatement(sql);
 		myStatement.execute();
 	}
@@ -64,9 +54,9 @@ public class SqliteDB {
 		String sql = "INSERT INTO Deaths"
 				+ "(name, dimension, xPos, yPos, zPos, deathCause, killerEntity, shooterEntity, date) "
 				+ "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?);";
-		
+
 		myStatement = conn.prepareStatement(sql);
-		
+
 		myStatement.setString(1, death.getName());
 		myStatement.setString(2, death.getDimension());
 		myStatement.setInt(3, death.getxPos());
@@ -76,48 +66,41 @@ public class SqliteDB {
 		myStatement.setString(7, death.getKillerEntity());
 		myStatement.setString(8, death.getShooterEntity());
 		myStatement.setString(9, dateFormatter.format(death.getDate()));
-		
+
 		myStatement.execute();
 		myStatement.close();
 	}
-	
+
 	public List<Death> readDeaths(String name, int count) throws SQLException, ParseException {
 		PreparedStatement myStatement = null;
 		String sql = "SELECT name, dimension, xPos, yPos, zPos, deathCause, killerEntity, shooterEntity, date "
 				+ "FROM Deaths WHERE name = ? ORDER BY date DESC LIMIT ?;";
-		
+
 		myStatement = conn.prepareStatement(sql);
-		
+
 		myStatement.setString(1, name);
 		myStatement.setInt(2, count);
-		
+
 		ResultSet result = myStatement.executeQuery();
-		
+
 		List<Death> deaths = new ArrayList<Death>();
 		while (result.next()) {
-			Death death = new Death(
-					result.getString(1),
-					result.getString(2),
-					result.getInt(3),
-					result.getInt(4),
-					result.getInt(5),
-					result.getString(6),
-					result.getString(7),
-					result.getString(8),
+			Death death = new Death(result.getString(1), result.getString(2), result.getInt(3), result.getInt(4),
+					result.getInt(5), result.getString(6), result.getString(7), result.getString(8),
 					dateFormatter.parse(result.getString(9)));
 			deaths.add(death);
 		}
 		myStatement.close();
 		return deaths;
-		
+
 	}
-	
+
 //	private void closeConnection() throws SQLException  {
 //		conn.close();
 //	}
-	
+
 	private Connection openConnection() throws SQLException {
 		conn = DriverManager.getConnection(jdbcUrl + dataFolderPath);
 		return conn;
 	}
-} 
+}

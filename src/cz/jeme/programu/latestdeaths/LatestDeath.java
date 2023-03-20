@@ -77,7 +77,7 @@ public class LatestDeath extends JavaPlugin implements Listener {
 						} else { // default players have to use number lower than 20
 							sender.sendMessage("Please, use number between 1 and 5!");
 						}
-					} else if (deathsCount >= 1){
+					} else if (deathsCount >= 1) {
 						showDeaths(sender.getName(), sender.getName(), deathsCount); // number is <= 5, read the
 																						// database
 						return true;
@@ -101,8 +101,10 @@ public class LatestDeath extends JavaPlugin implements Listener {
 						+ translateDate(death.getDate()) + "\",\"color\":\"green\"}]");
 				tellraw(senderName, "[\"\",{\"text\":\"Dimension: \",\"color\":\"#ADFFFF\"},{\"text\":\""
 						+ translateDimension(death.getDimension()) + "\",\"color\":\"green\"}]");
-				tellraw(senderName, "[\"\",{\"text\":\"Coordinates: \",\"color\":\"#ADFFFF\"},{\"text\":\""
-						+ translateCoords(death.getxPos(), death.getyPos(), death.getzPos()) + "\",\"color\":\"green\"}]");
+				tellraw(senderName,
+						"[\"\",{\"text\":\"Coordinates: \",\"color\":\"#ADFFFF\"},{\"text\":\""
+								+ translateCoords(death.getxPos(), death.getyPos(), death.getzPos())
+								+ "\",\"color\":\"green\"}]");
 				tellraw(senderName, "[\"\",{\"text\":\"Death cause: \",\"color\":\"#ADFFFF\"},{\"text\":\""
 						+ translateCause(death.getDeathCause()) + "\",\"color\":\"green\"}]");
 				if (death.getShooterEntity() != null) {

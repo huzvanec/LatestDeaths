@@ -1,7 +1,6 @@
-
 main: cz.jeme.programu.latestdeaths.LatestDeath
 name: LatestDeaths
-version: 3.0
+version: 1.0
 api-version: 1.16
 author: XD_CZ
 description: Shows player's last death(s)
@@ -9,7 +8,7 @@ website: programu.jeme.cz
 prefix: LatestDeaths
 commands:
     lastdeaths:
-      description: shows latest deaths
+      description: Shows player's last death(s)
       usage: "Usage: /latestdeaths <how many>"
       aliases: ld
       permission: latestdeaths.latestdeaths

@@ -12,7 +12,7 @@ public class Death {
 	private String killerEntity;
 	private String shooterEntity;
 	private Date date;
-	
+
 	public Death(String name, String dimension, int xPos, int yPos, int zPos, String deathCause, String killerEntity,
 			String shooterEntity, Date date) {
 		super();
