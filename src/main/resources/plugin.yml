@@ -1,6 +1,6 @@
-main: cz.jeme.programu.latestdeaths.LatestDeath
+main: cz.jeme.programu.latestdeaths.LatestDeaths
 name: LatestDeaths
-version: 1.0
+version: 2.0
 api-version: 1.16
 author: XD_CZ
 description: Shows player's last death(s)
