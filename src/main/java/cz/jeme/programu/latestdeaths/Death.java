@@ -1,73 +1,126 @@
 package cz.jeme.programu.latestdeaths;
 
+import org.bukkit.Material;
+import org.bukkit.World;
+import org.bukkit.entity.EntityType;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import java.util.Date;
+import java.util.UUID;
 
 public class Death {
-	private String name;
-	private String dimension;
-	private int xPos;
-	private int yPos;
-	private int zPos;
-	private String deathCause;
-	private String killerEntity;
-	private String shooterEntity;
-	private Date date;
+    @NotNull
+    private final UUID uuid;
+    @NotNull
+    private final World.Environment dimension;
+    private final double x;
+    private final double y;
+    private final double z;
+    @NotNull
+    private final DamageCause cause;
+    @Nullable
+    private final EntityType killer;
+    @Nullable
+    private final UUID killerPlayerUuid;
+    @Nullable
+    private final Material blockSource;
+    @Nullable
+    private final EntityType entitySource;
+    @Nullable
+    private final UUID playerSourceUuid;
+    @NotNull
+    private final Date date;
 
-	public Death(String name, String dimension, int xPos, int yPos, int zPos, String deathCause, String killerEntity,
-			String shooterEntity, Date date) {
-		super();
-		this.name = name;
-		this.dimension = dimension;
-		this.xPos = xPos;
-		this.yPos = yPos;
-		this.zPos = zPos;
-		this.deathCause = deathCause;
-		this.killerEntity = killerEntity;
-		this.shooterEntity = shooterEntity;
-		this.date = date;
-	}
+    @Override
+    public String toString() {
+        return "Death{" +
+                "uuid=" + uuid +
+                ", dimension=" + dimension +
+                ", x=" + x +
+                ", y=" + y +
+                ", z=" + z +
+                ", cause=" + cause +
+                ", killer=" + killer +
+                ", killerPlayerUuid=" + killerPlayerUuid +
+                ", blockSource=" + blockSource +
+                ", entitySource=" + entitySource +
+                ", playerSourceUuid=" + playerSourceUuid +
+                ", date=" + date +
+                '}';
+    }
 
-	@Override
-	public String toString() {
-		return "Death [name=" + name + ", dimension=" + dimension + ", xPos=" + xPos + ", yPos=" + yPos + ", zPos="
-				+ zPos + ", deathCause=" + deathCause + ", killerEntity=" + killerEntity + ", shooterEntity="
-				+ shooterEntity + ", date=" + date + "]";
-	}
+    public Death(@NotNull UUID uuid,
+                 World.@NotNull Environment dimension,
+                 double x, double y, double z,
+                 @NotNull DamageCause cause,
+                 @Nullable EntityType killer,
+                 @Nullable UUID killerPlayerUuid,
+                 @Nullable Material blockSource,
+                 @Nullable EntityType entitySource,
+                 @Nullable UUID playerSourceUuid,
+                 @NotNull Date date) {
+        this.uuid = uuid;
+        this.dimension = dimension;
+        this.x = x;
+        this.y = y;
+        this.z = z;
+        this.cause = cause;
+        this.killer = killer;
+        this.killerPlayerUuid = killerPlayerUuid;
+        this.blockSource = blockSource;
+        this.entitySource = entitySource;
+        this.playerSourceUuid = playerSourceUuid;
+        this.date = date;
+    }
 
-	public String getName() {
-		return name;
-	}
 
-	public String getDimension() {
-		return dimension;
-	}
+    public @NotNull UUID getUuid() {
+        return uuid;
+    }
 
-	public int getxPos() {
-		return xPos;
-	}
+    public World.@NotNull Environment getDimension() {
+        return dimension;
+    }
 
-	public int getyPos() {
-		return yPos;
-	}
+    public double getX() {
+        return x;
+    }
 
-	public int getzPos() {
-		return zPos;
-	}
+    public double getY() {
+        return y;
+    }
 
-	public String getDeathCause() {
-		return deathCause;
-	}
+    public double getZ() {
+        return z;
+    }
 
-	public String getKillerEntity() {
-		return killerEntity;
-	}
+    public @Nullable UUID getKillerPlayerUuid() {
+        return killerPlayerUuid;
+    }
 
-	public String getShooterEntity() {
-		return shooterEntity;
-	}
+    public @NotNull DamageCause getCause() {
+        return cause;
+    }
 
-	public Date getDate() {
-		return date;
-	}
+    public @Nullable EntityType getKiller() {
+        return killer;
+    }
 
+    public @NotNull Date getDate() {
+        return date;
+    }
+
+    public @Nullable Material getBlockSource() {
+        return blockSource;
+    }
+
+    public @Nullable EntityType getEntitySource() {
+        return entitySource;
+    }
+
+    public @Nullable UUID getPlayerSourceUuid() {
+        return playerSourceUuid;
+    }
 }

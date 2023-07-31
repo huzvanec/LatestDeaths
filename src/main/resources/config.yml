@@ -1,0 +1,17 @@
+# The limit of deaths a normal player can queue using /lastdeaths
+# This can be bypassed by giving the player latestdeaths.overlimit permission
+queue-limit: 5
+
+# The separator line between deaths while printing
+death-separator: '<gold><b>============================</b></gold>'
+
+# The color for the left part of the death print
+# For example "Cause: " or "Dimension: "
+key-color: "<aqua>"
+
+# The color for the right part of the death print
+# For example "Lava" or "The Nether"
+value-color: "<green>"
+
+# The format of the date printed
+date-pattern: "dd/MM/yyyy HH:mm:ss"

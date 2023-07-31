@@ -1,0 +1,4 @@
+name: LatestDeaths
+version: '${project.version}'
+main: cz.jeme.programu.latestdeaths.LatestDeaths
+api-version: '1.19'
