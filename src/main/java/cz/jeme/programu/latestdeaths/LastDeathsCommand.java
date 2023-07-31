@@ -105,6 +105,7 @@ public class LastDeathsCommand extends Command {
         }
     }
 
+
     @Override
     public @NotNull List<String> tabComplete(@NotNull CommandSender sender, @NotNull String alias, @NotNull String[] args) throws IllegalArgumentException {
         if (args.length == 2 && sender.hasPermission("latestdeaths.seeothers")) {
