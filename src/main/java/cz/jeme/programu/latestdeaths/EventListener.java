@@ -10,13 +10,12 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.projectiles.BlockProjectileSource;
 import org.bukkit.projectiles.ProjectileSource;
 
-import java.sql.SQLException;
 import java.util.Date;
 import java.util.UUID;
-import java.util.logging.Level;
 
 public class EventListener implements Listener {
 
@@ -27,7 +26,12 @@ public class EventListener implements Listener {
     }
 
     @EventHandler
-    public void onPlayerDeathEvent(PlayerDeathEvent event) {
+    private void onPlayerLogin(PlayerLoginEvent event) {
+        database.updateName(event.getPlayer());
+    }
+
+    @EventHandler
+    private void onPlayerDeath(PlayerDeathEvent event) {
         Player player = event.getEntity();
         EntityDamageEvent deathEvent = player.getLastDamageCause(); // Get death event
         DamageCause cause; // Get Cause
@@ -90,11 +94,6 @@ public class EventListener implements Listener {
                 playerSourceUuid,
                 new Date()
         );
-        try {
-            database.addDeath(death);
-        } catch (SQLException e) {
-            LatestDeaths.serverLog(Level.SEVERE, "Unable to write to database!");
-            e.printStackTrace();
-        }
+        database.createDeath(death);
     }
 }

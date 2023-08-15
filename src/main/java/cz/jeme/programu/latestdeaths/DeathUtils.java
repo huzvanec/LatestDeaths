@@ -6,6 +6,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.entity.EntityType;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.jetbrains.annotations.NotNull;
 
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
@@ -21,8 +22,8 @@ public final class DeathUtils {
     }
 
     public static void loadDatePattern() {
-        String pattern = LatestDeaths.config.getString("date-pattern");
-        assert pattern != null;
+        String pattern = LatestDeaths.config.getString("print.date-pattern");
+        if (pattern == null) throw new NullPointerException("Print date pattern is null!");
         dateFormatter = new SimpleDateFormat(pattern);
     }
 
@@ -31,31 +32,31 @@ public final class DeathUtils {
     public static List<Component> translateDeath(Death death, boolean otherPlayer) {
         List<String> deathList = new ArrayList<>();
         if (otherPlayer) {
-            String playerName = playerNameFromUuid(death.getUuid());
+            String playerName = playerNameFromUuid(death.uuid());
             deathList.add("Player: " + playerName);
         }
-        deathList.add("Dimension: " + translateDimension(death));
-        deathList.add("Coordinates: " + translateCoordinates(death));
-        deathList.add("Cause: " + translateCause(death));
-        if (death.getBlockSource() != null || death.getEntitySource() != null) {
-            String shooter = null;
-            if (death.getPlayerSourceUuid() != null) {
-                shooter = playerNameFromUuid(death.getPlayerSourceUuid());
-            } else if (death.getBlockSource() != null) {
-                shooter = translateString(death.getBlockSource().toString());
-            } else if (death.getEntitySource() != null) {
-                shooter = translateString(death.getEntitySource().toString());
+        deathList.add("Dimension: " + translateDimension(death.dimension()));
+        deathList.add("Coordinates: " + translateCoordinates(death.x(), death.y(), death.z()));
+        deathList.add("Cause: " + translateCause(death.cause()));
+        if (death.blockSource() != null || death.entitySource() != null) {
+            String shooter;
+            if (death.playerSourceUuid() != null) {
+                shooter = playerNameFromUuid(death.playerSourceUuid());
+            } else if (death.blockSource() != null) {
+                shooter = upperString(death.blockSource().toString());
+            } else {
+                shooter = upperString(death.entitySource().toString());
             }
             deathList.add("Shot by: " + shooter);
-            if (death.getKiller() != null) {
-                deathList.add("Using: " + translateString(death.getKiller().toString()));
+            if (death.killer() != null) {
+                deathList.add("Using: " + upperString(death.killer().toString()));
             }
-        } else if (death.getKillerPlayerUuid() != null) {
-            deathList.add("Killed by: " + playerNameFromUuid(death.getKillerPlayerUuid()));
-        } else if (death.getKiller() != null) {
-            deathList.add("Killed by: " + translateKiller(death));
+        } else if (death.killerPlayerUuid() != null) {
+            deathList.add("Killed by: " + playerNameFromUuid(death.killerPlayerUuid()));
+        } else if (death.killer() != null) {
+            deathList.add("Killed by: " + translateKiller(death.killer()));
         }
-        deathList.add("Date: " + dateFormatter.format(death.getDate()));
+        deathList.add("Date: " + dateFormatter.format(death.date()));
 
         colorizeDeathTranslation(deathList);
 
@@ -65,8 +66,8 @@ public final class DeathUtils {
     }
 
     private static void colorizeDeathTranslation(List<String> deathList) {
-        String keyColor = LatestDeaths.config.getString("key-color");
-        String valueColor = LatestDeaths.config.getString("value-color");
+        String keyColor = LatestDeaths.config.getString("print.key-color");
+        String valueColor = LatestDeaths.config.getString("print.value-color");
         assert keyColor != null;
         assert valueColor != null;
         int i = 0;
@@ -74,74 +75,40 @@ public final class DeathUtils {
             String[] split = item.split(": ");
             deathList.set(i,
                     keyColor + split[0] + ": " + Messages.getEscapeTag(keyColor)
-                    + valueColor + split[1] + Messages.getEscapeTag(valueColor));
+                            + valueColor + split[1] + Messages.getEscapeTag(valueColor));
             i++;
         }
     }
 
     public static String playerNameFromUuid(UUID uuid) {
-        if (uuid == null) {
-            return null;
-        }
-        return Bukkit.getOfflinePlayer(uuid).getName();
-    }
-
-    public static String translateDimension(Death death) {
-        return translateDimension(death.getDimension());
+        return (uuid == null) ? null : Bukkit.getOfflinePlayer(uuid).getName();
     }
 
     public static String translateDimension(World.Environment dimension) {
-        if (dimension == World.Environment.NORMAL) {
-            return "Overworld";
-        } else if (dimension == World.Environment.NETHER) {
-            return "The Nether";
-        } else if (dimension == World.Environment.THE_END) {
-            return "The End";
-        }
-        return "Custom";
-    }
-
-    public static String translateCoordinates(Death death) {
-        return translateCoordinates(death.getX(), death.getY(), death.getZ());
+        return switch (dimension) {
+            case NORMAL -> "Overworld";
+            case NETHER -> "The Nether";
+            case THE_END -> "The End";
+            default -> "Unknown";
+        };
     }
 
     public static String translateCoordinates(double x, double y, double z) {
-        String sepa = " / ";
+        String sepa = LatestDeaths.config.getString("print.coordinates-separator");
         return DECIMAL_FORMATTER.format(x) + sepa + DECIMAL_FORMATTER.format(y) + sepa + DECIMAL_FORMATTER.format(z);
     }
 
-    public static String translateCause(Death death) {
-        return translateCause(death.getCause());
-    }
-
     public static String translateCause(EntityDamageEvent.DamageCause cause) {
-        return translateString(cause.toString());
-    }
-
-    public static String translateKiller(Death death) {
-        EntityType killer = death.getKiller();
-        if (killer == null) {
-            return null;
-        }
-        return translateKiller(killer);
+        return upperString(cause.toString());
     }
 
     public static String translateKiller(EntityType killer) {
-        return translateString(killer.toString());
+        return (killer == null) ? null : upperString(killer.toString());
     }
 
-    public String translateShooter(String shooter) {
-// This doesn't work, because it lowers also playernames, so i had to turn it off
-//		String lowerShooter = shooter.replace('_', ' ').toLowerCase();
-//		return lowerShooter.substring(0, 1).toUpperCase() + lowerShooter.substring(1);
-        return shooter;
-    }
-
-//    private String translateDate(Date dateAndTime) {
-//        return dateFormatter.format(dateAndTime);
-//    }
-
-    public static String translateString(String input) {
+    public static String upperString(@NotNull String input) {
+        // I can't use org.apache.commons.lang3.text.WordUtils, because it is deprecated and
+        // org.apache.commons.text is not bundled with paper
         String[] words = input.split("_");
         StringBuilder stringBuilder = new StringBuilder();
 
@@ -153,20 +120,22 @@ public final class DeathUtils {
         return stringBuilder.toString().trim();
     }
 
-    public static Map<String, UUID> getOfflinePlayersStringUuidMap() {
-        Map<String, UUID> offlinePlayers = new HashMap<>();
-        for (OfflinePlayer offlinePlayer : Bukkit.getOfflinePlayers()) {
-            offlinePlayers.put(offlinePlayer.getName(), offlinePlayer.getUniqueId());
-        }
-        return offlinePlayers;
+
+    public static Map<String, UUID> getOfflinePlayersNameUuid() {
+        return Arrays.stream(Bukkit.getOfflinePlayers())
+                .filter(player -> player.getName() != null)
+                .collect(Collectors.toMap(
+                        OfflinePlayer::getName,
+                        OfflinePlayer::getUniqueId
+                ));
     }
 
-    public static Map<UUID, String> getOfflinePlayersUuidStringMap() {
-        Map<UUID, String> offlinePlayers = new HashMap<>();
-        for (OfflinePlayer offlinePlayer : Bukkit.getOfflinePlayers()) {
-            offlinePlayers.put(offlinePlayer.getUniqueId(), offlinePlayer.getName());
-        }
-        return offlinePlayers;
+    public static Map<UUID, String> getOfflinePlayersUuidName() {
+        return Arrays.stream(Bukkit.getOfflinePlayers())
+                .filter(player -> player.getName() != null)
+                .collect(Collectors.toMap(
+                        OfflinePlayer::getUniqueId,
+                        OfflinePlayer::getName
+                ));
     }
-
 }

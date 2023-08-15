@@ -6,28 +6,17 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
-import java.sql.SQLException;
-import java.text.ParseException;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-import java.util.logging.Level;
-import java.util.stream.Collectors;
+import java.util.*;
 
 public class LastDeathsCommand extends Command {
     private final Database database;
 
     protected LastDeathsCommand(Database database) {
         super("lastdeaths", "Shows player's last deaths", "false", List.of("ld"));
-        register();
         setPermission("latestdeaths.lastdeaths");
+        Bukkit.getCommandMap().register("latestdeaths", this);
 
         this.database = database;
-    }
-
-    private void register() {
-        Bukkit.getCommandMap().register("latestdeaths", this);
     }
 
     @Override
@@ -46,13 +35,13 @@ public class LastDeathsCommand extends Command {
             }
         }
 
-        int limit = LatestDeaths.config.getInt("queue-limit");
+        int limit = LatestDeaths.config.getInt("print.queue-limit");
         if (deathsCount > limit && !sender.hasPermission("latestdeaths.overlimit")) {
             sender.sendMessage(Messages.prefix("<red>Too many deaths to display! The limit is " + limit + "!</red>"));
             return true;
         }
         if (args.length == 2) {
-            Map<String, UUID> offlinePlayers = DeathUtils.getOfflinePlayersStringUuidMap();
+            Map<String, UUID> offlinePlayers = DeathUtils.getOfflinePlayersNameUuid();
             if (!offlinePlayers.containsKey(args[1])) {
                 sender.sendMessage(Messages.prefix("<red>Player not found!</red>"));
                 return true;
@@ -75,21 +64,12 @@ public class LastDeathsCommand extends Command {
     }
 
     private List<Death> readDeaths(CommandSender sender, UUID uuid, int count) {
-        try {
-            return database.readDeaths(uuid, count);
-        } catch (SQLException | ParseException e) {
-            sender.sendMessage(Messages.prefix("<red>An error occured while reading from the database!</red>"));
-            LatestDeaths.serverLog(Level.SEVERE, "Unable to read from database!");
-            e.printStackTrace();
-        }
-        return null;
+        return database.readDeaths(uuid, count);
     }
 
     private static void showDeaths(CommandSender sender, List<Death> deaths, boolean otherPlayer) {
-        if (deaths == null) {
-            return;
-        }
-        if (deaths.size() == 0) {
+        if (deaths == null) return;
+        if (deaths.isEmpty()) {
             if (otherPlayer) {
                 sender.sendMessage(Messages.prefix("<red>This player has no deaths!</red>"));
             } else {
@@ -97,7 +77,7 @@ public class LastDeathsCommand extends Command {
             }
             return;
         }
-        String separator = LatestDeaths.config.getString("death-separator");
+        String separator = LatestDeaths.config.getString("print.death-separator");
         sender.sendMessage(Messages.from(separator));
         for (Death death : deaths) {
             DeathUtils.translateDeath(death, otherPlayer).forEach(sender::sendMessage);
@@ -109,15 +89,13 @@ public class LastDeathsCommand extends Command {
     @Override
     public @NotNull List<String> tabComplete(@NotNull CommandSender sender, @NotNull String alias, @NotNull String[] args) throws IllegalArgumentException {
         if (args.length == 2 && sender.hasPermission("latestdeaths.seeothers")) {
-            return containsFilter(Bukkit.getOnlinePlayers().stream()
-                    .map(Player::getName)
-                    .collect(Collectors.toList()), args[1]);
+            return containsFilter(DeathUtils.getOfflinePlayersNameUuid().keySet(), args[1]);
         }
         return Collections.emptyList();
     }
 
-    private List<String> containsFilter(List<String> list, String mark) {
-        return list.stream()
+    public static List<String> containsFilter(Collection<String> collection, String mark) {
+        return collection.stream()
                 .filter(item -> item.contains(mark))
                 .toList();
     }

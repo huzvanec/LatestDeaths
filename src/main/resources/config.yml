@@ -1,17 +1,43 @@
-# The limit of deaths a normal player can queue using /lastdeaths
-# This can be bypassed by giving the player latestdeaths.overlimit permission
-queue-limit: 5
+mariadb:
+  server: 'localhost'
+  port: '3306'
+  user: '<user_name>'
+  # Leave empty string for no password
+  password: ''
+  database-name: '<database_name>'
+  # Leave empty string for no prefix
+  table-prefix: 'ld_'
 
-# The separator line between deaths while printing
-death-separator: '<gold><b>============================</b></gold>'
+logging:
+  # Logging when opening and closing connection with database
+  log-connection: true
+  # Logging jdbc version when opening connection with database
+  log-jdbc: false
+  # Logging driver name and version when opening connection with database
+  log-driver: false
+  # Logging user login to database
+  log-login: true
+  # Logging creating player deaths
+  log-deaths: false
 
-# The color for the left part of the death print
-# For example "Cause: " or "Dimension: "
-key-color: "<aqua>"
+print:
+  # The limit of deaths a normal player can request using /lastdeaths
+  # This can be bypassed by giving the player latestdeaths.overlimit permission
+  request-limit: 5
 
-# The color for the right part of the death print
-# For example "Lava" or "The Nether"
-value-color: "<green>"
+  # The separator line between deaths while printing
+  death-separator: '<gold><b>=================================</b></gold>'
 
-# The format of the date printed
-date-pattern: "dd/MM/yyyy HH:mm:ss"
+  # The color for the left part of the death print
+  # For example "Cause: " or "Dimension: "
+  key-color: '<aqua>'
+
+  # The color for the right part of the death print
+  # For example "Lava" or "The Nether"
+  value-color: '<green>'
+
+  # The format of the date printed
+  date-pattern: 'dd/MM/yyyy HH:mm:ss'
+
+  # The separator string used for coordinates
+  coordinates-separator: ' / '
