@@ -18,7 +18,6 @@ public class Database {
     public static final String NAMES_TABLE_NAME = "player_names";
     private static final String JDBC_PREFIX = "jdbc:mariadb";
     private static final String JDBC_DRIVER = "org.mariadb.jdbc.Driver";
-    public Connection connection = null;
     private String deathsTableNamePrefixed = null;
     private String namesTableNamePrefixed = null;
 
@@ -39,36 +38,31 @@ public class Database {
         deathsTableNamePrefixed = tablePrefix + DEATHS_TABLE_NAME;
         namesTableNamePrefixed = tablePrefix + NAMES_TABLE_NAME;
 
-        closeConnection(connection);
-        connection = openConnection();
         createTables(tablePrefix);
     }
 
-    private Connection openConnection() {
+    private Connection openConnection() throws SQLException {
         String server = LatestDeaths.config.getString("mariadb.server");
         String port = LatestDeaths.config.getString("mariadb.port");
         String databaseName = LatestDeaths.config.getString("mariadb.database-name");
         String user = LatestDeaths.config.getString("mariadb.user");
         String password = LatestDeaths.config.getString("mariadb.password");
-        Connection conn;
+        Connection connection;
         DatabaseMetaData meta;
         String driver;
         String jdbcVersion;
         try {
-            conn = DriverManager.getConnection(String.format("%s://%s:%s/%s", JDBC_PREFIX, server, port, databaseName), user, password);
-            meta = conn.getMetaData();
+            connection = DriverManager.getConnection(String.format("%s://%s:%s/%s", JDBC_PREFIX, server, port, databaseName), user, password);
+            meta = connection.getMetaData();
             driver = meta.getDriverName() + " (" + meta.getDriverVersion() + ")";
             jdbcVersion = "(" + meta.getJDBCMajorVersion() + "." + meta.getJDBCMinorVersion() + ")";
         } catch (SQLException e) {
             LatestDeaths.serverLog("Couldn't open connection with database!", e);
-            return null;
+            throw e;
         }
 
         if (LatestDeaths.config.getBoolean("logging.log-connection")) {
-            LatestDeaths.serverLog(Level.INFO, "Opened connection with database");
-        }
-        if (LatestDeaths.config.getBoolean("logging.log-login")) {
-            LatestDeaths.serverLog(Level.INFO, "Logged in as " + user + "@" + server + ":" + port);
+            LatestDeaths.serverLog(Level.INFO, "Opened connection with database (" + user + "@" + server + ":" + port + ")");
         }
         if (LatestDeaths.config.getBoolean("logging.log-driver")) {
             LatestDeaths.serverLog(Level.INFO, "Using " + driver);
@@ -76,7 +70,7 @@ public class Database {
         if (LatestDeaths.config.getBoolean("logging.log-jdbc")) {
             LatestDeaths.serverLog(Level.INFO, "Using JDBC " + jdbcVersion);
         }
-        return conn;
+        return connection;
     }
 
     private void createTables(String tablePrefix) {
@@ -105,7 +99,9 @@ public class Database {
 
         PreparedStatement namesStatement;
         PreparedStatement deathsStatement;
+        Connection connection = null;
         try {
+            connection = openConnection();
             namesStatement = connection.prepareStatement(namesStatementStr);
             namesStatement.execute();
             namesStatement.close();
@@ -115,13 +111,15 @@ public class Database {
             deathsStatement.close();
         } catch (SQLException e) {
             LatestDeaths.serverLog("Couldn't create tables!", e);
+        } finally {
+            closeConnection(connection);
         }
     }
 
-    public void closeConnection(Connection conn) {
-        if (conn == null) return;
+    public void closeConnection(Connection connection) {
+        if (connection == null) return;
         try {
-            conn.close();
+            connection.close();
             if (LatestDeaths.config.getBoolean("logging.log-connection")) {
                 LatestDeaths.serverLog(Level.INFO, "Closed connection with database");
             }
@@ -137,8 +135,9 @@ public class Database {
                 + "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
 
         PreparedStatement statement;
-
+        Connection connection = null;
         try {
+            connection = openConnection();
             statement = connection.prepareStatement(statementStr);
 
             statement.setString(1, death.uuid().toString());
@@ -158,6 +157,8 @@ public class Database {
             statement.close();
         } catch (SQLException e) {
             LatestDeaths.serverLog("Couldn't create death!", e);
+        } finally {
+            closeConnection(connection);
         }
     }
 
@@ -169,7 +170,9 @@ public class Database {
 
         PreparedStatement statement;
         List<Death> deaths = new ArrayList<>();
+        Connection connection = null;
         try {
+            connection = openConnection();
             statement = connection.prepareStatement(statementStr);
 
             statement.setString(1, uuid.toString());
@@ -203,6 +206,8 @@ public class Database {
             statement.close();
         } catch (SQLException e) {
             LatestDeaths.serverLog("Couldn't read deaths!", e);
+        } finally {
+            closeConnection(connection);
         }
         return deaths;
     }
@@ -214,13 +219,17 @@ public class Database {
         String statementStr = "UPDATE " + namesTableNamePrefixed + " SET "
                 + "name = ? WHERE uuid = ?;";
         PreparedStatement statement;
+        Connection connection = null;
         try {
+            connection = openConnection();
             statement = connection.prepareStatement(statementStr);
             statement.setString(1, name);
             statement.setString(2, uuid.toString());
             statement.execute();
         } catch (SQLException e) {
             LatestDeaths.serverLog("Couldn't update name for player " + name + " (" + uuid + ")!", e);
+        } finally {
+            closeConnection(connection);
         }
     }
 
@@ -231,7 +240,9 @@ public class Database {
                 + " WHERE uuid = ?;";
 
         PreparedStatement statement;
+        Connection connection = null;
         try {
+            connection = openConnection();
             statement = connection.prepareStatement(statementStr);
             statement.setString(1, uuid.toString());
             ResultSet result = statement.executeQuery();
@@ -249,6 +260,8 @@ public class Database {
         } catch (SQLException e) {
             LatestDeaths.serverLog("Couldn't create name record for player " + name + " (" + uuid + ")!", e);
             return true;
+        } finally {
+            closeConnection(connection);
         }
     }
 

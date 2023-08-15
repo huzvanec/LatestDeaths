@@ -10,13 +10,11 @@ mariadb:
 
 logging:
   # Logging when opening and closing connection with database
-  log-connection: true
+  log-connection: false
   # Logging jdbc version when opening connection with database
   log-jdbc: false
   # Logging driver name and version when opening connection with database
   log-driver: false
-  # Logging user login to database
-  log-login: true
   # Logging creating player deaths
   log-deaths: false
 

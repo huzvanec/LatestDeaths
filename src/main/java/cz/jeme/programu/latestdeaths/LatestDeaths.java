@@ -13,7 +13,6 @@ public class LatestDeaths extends JavaPlugin {
 
     private Database database;
     public static FileConfiguration config;
-    private boolean configured;
 
     @Override
     public void onEnable() {
@@ -23,7 +22,7 @@ public class LatestDeaths extends JavaPlugin {
         String user = config.getString("mariadb.user");
         String databaseName = config.getString("mariadb.database-name");
 
-        configured = user != null && !user.equals("<user_name>") || databaseName != null && !databaseName.equals("<database_name>");
+        boolean configured = user != null && !user.equals("<user_name>") || databaseName != null && !databaseName.equals("<database_name>");
 
         if (!configured) {
             serverLog(Level.WARNING, "The plugin has not yet been configured!");
@@ -41,12 +40,6 @@ public class LatestDeaths extends JavaPlugin {
 
         PluginManager pluginManager = Bukkit.getServer().getPluginManager();
         pluginManager.registerEvents(new EventListener(database), this);
-    }
-
-    @Override
-    public void onDisable() {
-        if (!configured) return;
-        database.closeConnection(database.connection);
     }
 
     public void reload() {
