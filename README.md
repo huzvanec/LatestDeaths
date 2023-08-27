@@ -10,7 +10,7 @@ Paper based servers 1.19.4+<br>
 This requires the player to have the `latestdeaths.lastdeaths` permission
 #### Read your last few deaths
 `/ld <amount>`<br>
-The amount limit can be [specified in the config](https://github.com/Mandlemankiller/LatestDeaths/blob/master/src/main/resources/config.yml#L3), players with `latesetdeaths.overlimit` permission can bypass this limit.
+The amount limit can be [specified in the config](https://github.com/Mandlemankiller/LatestDeaths/blob/master/src/main/resources/config.yml#L24), players with `latesetdeaths.overlimit` permission can bypass this limit.
 #### Read somebody else's few last deaths
 `/ld <amount> <player name>`<br>
 This requires the player to have the `latestdeaths.seeothers` permission.<br>
