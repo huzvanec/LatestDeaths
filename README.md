@@ -4,6 +4,7 @@ LatestDeaths is a plugin, that saves data after each player's death and than pro
 ## Supported versions
 Paper based servers 1.19.4+<br>
 **Bukkit and Spigot are not supported!**
+### LatestDeaths requires [MariaDB version 10.7.0](https://mariadb.com/kb/en/mariadb-1070-release-notes/) or later!
 # Usage
 #### Read your last death
 `/ld`<br>
